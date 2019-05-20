@@ -25,21 +25,39 @@ class AwariGame(Game):
         b = Board(self.n)
         return np.array(b.pieces)
 
-    def getBoardSize(self):
+    def getBoardSize(self, num_layers):
         # (a,b) tuple
         # y-dimension required for NNet integration
 
         # For NNet integration we transform the board into an image stack
         # which highlights some useful structural information which would
         # be hard to be derived independently.  AlphagoZero does this too.
-        return (6, 6, 9)
+        if num_layers == 9:
+            return (6, 6, 9)
+        elif num_layers == 15:
+            return (6, 6, 15)
+        elif num_layers == 13:
+            return (6, 6, 13)
+        elif num_layers == 1:
+            return (6, 6, 1)
+        else: 
+            raise Exception("Number of image stack layer unknown")
 
-    def getImageStackSize(self):
-        """ Returns size of image stack that is used as input to NNet
-        """
-        return 9
+    # def getImageStackSize(self):
+    #     """ Returns size of image stack that is used as input to NNet
+    #     """
+    #     if num_layers == 9:
+    #         return 9
+    #     elif num_layers == 15:
+    #         return 15
+    #     elif num_layers == 13:
+    #         return 13
+    #     elif num_layers == 1:
+    #         return 1
+    #     else: 
+    #         raise Exception("Number of image stack layer unknown")
 
-    def getImageStack(self, board):
+    def getImageStack(self, board, num_layers):
         """ Returns input stack for the given board
         """
         # create image stack that will be an input to NNet 
@@ -47,7 +65,7 @@ class AwariGame(Game):
 
         # 2D version for better compatibility, also circular sowing
         # NOTE: channels last for compatibility with other games
-        main_planes = np.zeros(shape=(6, 6, 9))
+        main_planes = np.zeros(shape=(6, 6, num_layers))
         # main images
         #
         # 3 | 10  9  8  7
@@ -67,29 +85,60 @@ class AwariGame(Game):
         for pit in range(2 * Board.pits_n):
             i = ind_x[pit]
             j = ind_y[pit]
-            if j <= 2:
-                if (j == 1 and i >= 1 and i <= 4) or (j == 2 and (i == 1 or i == 4)):
+            if (j == 1 and i >= 1 and i <= 4) or (j == 2 and (i == 1 or i == 4)):
+                if num_layers == 1:
+                    main_planes[i][j][0] = board[0][pit]
+                else:
                     main_planes[i][j][1] = board[0][pit]
                     main_planes[i][j][3] = 1
+                if num_layers == 9:
                     main_planes[i][j][5] = (board[0][pit] < 3)
-                    if player_white:
-                        main_planes[i][j][0] = 1
+                elif num_layers != 1: 
+                    main_planes[i][j][5] = (board[0][pit] > 2)
+                if num_layers == 15:
+                    main_planes[i][j][7] = (board[0][pit] == 0)
+                    main_planes[i][j][9] = (board[0][pit] == 1)
+                    main_planes[i][j][11] = (board[0][pit] == 2)
+                if num_layers == 13:
+                    main_planes[i][j][7] = (board[0][pit] == 1)
+                    main_planes[i][j][9] = (board[0][pit] == 2)
+                if player_white and num_layers != 1:
+                    main_planes[i][j][0] = 1
             else:
                 if (j == 4 and i >= 1 and i <= 4) or (j == 3 and (i == 1 or i == 4)):
-                    main_planes[i][j][2] = board[0][pit]
-                    main_planes[i][j][4] = 1
-                    main_planes[i][j][6] = (board[0][pit] < 3)
-                    if not player_white:
+                    if num_layers == 1:
+                        main_planes[i][j][0] = board[0][pit]
+                    else:
+                        main_planes[i][j][2] = board[0][pit]
+                        main_planes[i][j][4] = 1
+                    if num_layers == 9:
+                        main_planes[i][j][6] = (board[0][pit] < 3)
+                    elif num_layers != 1: 
+                        main_planes[i][j][6] = (board[0][pit] > 2)
+                    if num_layers == 15:
+                        main_planes[i][j][8] = (board[0][pit] == 0)
+                        main_planes[i][j][10] = (board[0][pit] == 1)
+                        main_planes[i][j][12] = (board[0][pit] == 2)
+                    if num_layers == 13:
+                        main_planes[i][j][8] = (board[0][pit] == 1)
+                        main_planes[i][j][10] = (board[0][pit] == 2)                   
+                    if not player_white and num_layers != 1:
                         main_planes[i][j][0] = 1
+        
 
+        if player_white and num_layers == 1:
+            main_planes[0][4][0] = 1
+        elif  not player_white and num_layers == 1:
+            main_planes[0][5][0] = 1 #indicate player for version layer1
+
+        if num_layers == 1:
+            main_planes[5][1][0] = board[0][Board.pit_captured_self]
+            main_planes[0][2][0] = board[0][Board.pit_captured_other]
+        else:
         # add own pits
-        main_planes[5][1][7] = board[0][Board.pit_captured_self]
-        main_planes[0][2][8] = board[0][Board.pit_captured_other]
-
-        #print('board:')
-        #print(board)
-        #print('main_planes:')
-        #print(main_planes)
+            main_planes[5][1][num_layers-2] = board[0][Board.pit_captured_self]
+            main_planes[0][2][num_layers-1] = board[0][Board.pit_captured_other]
+        
         return main_planes
 
     def getActionSize(self):

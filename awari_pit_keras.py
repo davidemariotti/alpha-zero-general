@@ -23,7 +23,7 @@ parser.add_argument("-f", "--file", type=str, default="best.pth.tar")
 parser.add_argument("-n", "--number", type=int, default=2)
 parser.add_argument("-m", "--mcts", type=int, default=200)
 parser.add_argument("-c", "--cpuct", type=float, default=1.0)
-parser.add_argument("-o", "--opponent", type=str, default="fop8")
+parser.add_argument("-o", "--opponent", type=str, default="fop3")
 parser.add_argument("-p", "--player", type=str, default="nn")
 args = parser.parse_args()
 
@@ -44,11 +44,8 @@ class AwariNeuralNetPlayer():
         self.n1.load_checkpoint(args.dir, args.file)
 
     def play(self, board):
-        # args1 = dotdict({'numMCTSSims': 25, 'cpuct':1.0})
         args1 = dotdict({'numMCTSSims': args.mcts, 'cpuct': args.cpuct})
-        #args1 = dotdict({'numMCTSSims': 15, 'cpuct':1.0})
         mcts1 = MCTS(self.game, self.n1, args1)
-        # actions = mcts1.getActionProb(board, temp=0)
         actions = mcts1.getActionProb(board, temp=1)
         select = np.argmax(actions)
         print('board: ', end="")
@@ -103,49 +100,11 @@ opponent = getPlayer(args.opponent)
 if opponent == None:
     sys.exit(1)
 
-# nnet players
-#n1 = NNet(g)
-#n1.load_checkpoint('./pretrained_models/awari/keras/','best.pth.tar')
-#n1.load_checkpoint('./temp/awari/','best.pth.tar')
 
-#args1 = dotdict({'numMCTSSims': 25, 'cpuct':1.0})
-#mcts1 = MCTS(g, n1, args1)
-#n1p = lambda x: np.argmax(mcts1.getActionProb(x, temp=0))
-
-#anp = AwariNeuralNetPlayer(g).play
 player = getPlayer(args.player)
 if player == None:
     sys.exit(1)
 
-#n2 = NNet(g)
-#n2.load_checkpoint('./temp/tictactoe/','best.pth.tar')
-#args2 = dotdict({'numMCTSSims': 25, 'cpuct':1.0})
-#mcts2 = MCTS(g, n2, args2)
-#n2p = lambda x: np.argmax(mcts2.getActionProb(x, temp=0))
 
-#arena = Arena.Arena(n1p, rp, g, display=display)
-#print("win/lost/draw", arena.playGames(100, verbose=True))
-#arena = Arena.Arena(n1p, hp, g, display=display)
-#arena = Arena.Arena(hp, rp, g, display=display)
-#arena = Arena.Arena(n1p, rp, g, display=display)
-
-#arena = Arena.Arena(n1p, rp, g, display=display)
-#arena = Arena.Arena(n1p, gp, g, display=display)
-#arena = Arena.Arena(n1p, mp2, g, display=display)
-#arena = Arena.Arena(n1p, mp4, g, display=display)
-#arena = Arena.Arena(n1p, hp, g, display=display)
-#arena = Arena.Arena(anp, hp, g, display=display)
-
-#arena = Arena.Arena(anp, gp, g, display=display)
-#arena = Arena.Arena(anp, rp, g, display=display)
-#arena = Arena.Arena(anp, op, g, display=display)
-#arena = Arena.Arena(op, op2, g, display=display)
-#arena = Arena.Arena(fop1, fop2, g, display=display)
-#arena = Arena.Arena(anp, fop3, g, display=display)
-#arena = Arena.Arena(anp, fop5, g, display=display)
-#arena = Arena.Arena(anp, mp4, g, display=display)
-#arena = Arena.Arena(anp, mp6, g, display=display)
-
-# arena = Arena.Arena(anp, fop8, g, display=display)
 arena = Arena.Arena(player, opponent, g, display=display)
 print("win/lost/draw", arena.playGames(args.number, verbose=True))
