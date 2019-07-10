@@ -6,24 +6,12 @@ from utils import *
 import numpy as np
 
 args = dotdict({
-    # 'numIters': 10,
-    # 'numIters': 20,
     'numIters': 1,
-    # 'numIters': 150,
-    # 'numEps': 100,
-    # 'numEps': 25,
     'numEps': 5,
-    # 'tempThreshold': 15,
-    # increased so choices are not stuck too soon:
-    # 'tempThreshold': 60,
-    # TODO: further increased, need to be beyond regular draw limit?
     'tempThreshold': 400,
     'updateThreshold': 0.55,
     'maxlenOfQueue': 200000,
-    # 'numMCTSSims': 10,
-    # 'numMCTSSims': 25,
     'numMCTSSims': 100,
-    # 'arenaCompare': 20,
     'arenaCompare': 10,
     'cpuct': 1,
 

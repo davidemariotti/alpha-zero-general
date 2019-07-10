@@ -19,7 +19,7 @@ class MCTS():
 
         self.Es = {}        # stores game.getGameEnded ended for board s
         self.Vs = {}        # stores game.getValidMoves for board s
-        # required for Awari?
+        
         self.MAX_TREE_DEPTH = 300
 
     def getActionProb(self, canonicalBoard, temp=1):

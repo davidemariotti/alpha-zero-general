@@ -25,19 +25,16 @@ args = dotdict({
     
     'lr': 0.01,
     'dropout': 0.3,# not used by residual model
-    # 'epochs': 15,
     'epochs': 10,
     'batch_size': 32,
     'cuda': False,
     'num_channels': 512,# not used by residual model
     
-    # 'cnn_filter_num': 256, 
+     
     'cnn_filter_num': 64, 
-    # 'cnn_first_filter_size': 5,
     'cnn_first_filter_size': 3,
     'cnn_filter_size': 3,
     'residual_block_num': 5,
-    # 'residual_block_num': 2,
     'l2_reg': 1e-4,
     'value_fc_size': 256,
     'trainer_loss_weights': [1.0, 1.0], # not used // [policy, value] prevent value overfit in SL

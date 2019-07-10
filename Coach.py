@@ -1,4 +1,3 @@
-# from collections import deque
 from Arena import Arena
 from MCTS import MCTS
 import numpy as np
@@ -87,7 +86,6 @@ class Coach():
                             pi[i] = 1/len(moves)
                     else:
                         pi = [0, 0, 0, 0, 0, 0, 1]
-                    # trainExamples.append([canonicalBoard, self.curPlayer, pi, None])
                     trainExamples.append([canonicalBoard.tolist(), self.curPlayer, pi, None])
                 return [(x[0],x[2],r*((-1)**(x[1]!=self.curPlayer))) for x in trainExamples]
 
@@ -101,12 +99,9 @@ class Coach():
         """
 
         for i in range(1, self.args.numIters+1):
-            # bookkeeping
             print('------ITER ' + str(i) + '------')
             # examples of the iteration
             if not self.skipFirstSelfPlay or i>1:
-                # iterationTrainExamples = deque([], maxlen=self.args.maxlenOfQueue)
-                # Regular list so it it json serializable
                 iterationTrainExamples = []
     
                 eps_time = AverageMeter()
@@ -117,7 +112,7 @@ class Coach():
                     self.mcts = MCTS(self.game, self.nnet, self.args)   # reset search tree
                     iterationTrainExamples += self.executeEpisode()
     
-                    # bookkeeping + plot progress
+                   
                     eps_time.update(time.time() - end)
                     end = time.time()
                     bar.suffix  = '({eps}/{maxeps}) Eps Time: {et:.3f}s | Total: {total:} | ETA: {eta:}'.format(eps=eps+1, maxeps=self.args.numEps, et=eps_time.avg,
@@ -171,8 +166,6 @@ class Coach():
         if not os.path.exists(folder):
             os.makedirs(folder)
         filename = os.path.join(folder, self.getCheckpointFile(iteration)+".examples")
-        # with open(filename, "wb+") as f:
-        #     Pickler(f).dump(self.trainExamplesHistory)
         with open(filename, "w+", encoding="utf8") as f:
             json.dump(self.trainExamplesHistory, f)
         f.closed
@@ -187,8 +180,6 @@ class Coach():
                 sys.exit()
         else:
             print("File with trainExamples found. Read it.")
-            # with open(examplesFile, "rb") as f:
-            #     self.trainExamplesHistory = Unpickler(f).load()
             with open(examplesFile, "r", encoding="utf8") as f:
                 self.trainExamplesHistory = json.load(f)
                 # for export of game info to the other alpha-zero implementations

@@ -7,7 +7,7 @@ from keras.models import *
 from keras.layers import *
 from keras.optimizers import *
 from keras.regularizers import l2
-# from keras.callbacks import TensorBoard
+
 
 """
 NeuralNet for the game of Awari.

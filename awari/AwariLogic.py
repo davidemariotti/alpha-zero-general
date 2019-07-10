@@ -38,23 +38,16 @@ class Board():
         "Set up initial board configuration."
 
         self.n = n
-        # shortcut, not expected to change in practice
+        
         assert self.n == Board.pits_n
 
-        # Create the empty board array.
-        #self.pieces = [None] * Board.pits_alloc
-        #for i in range(Board.pits_total):
-        #    self.pieces[i] = [0]
-        #    self.pieces[i][0] = 4
-        #for i in range(Board.pits_total, Board.pits_alloc):
-        #    self.pieces[i] = [0]
-        #    self.pieces[i][0] = 0
+        
         self.pieces = [[4, 4, 4, 4, 4, 4,
                         4, 4, 4, 4, 4, 4,
                         0, 0,
                         0, 0]]
 
-    # add [] indexer syntax to the Board
+    
     def __getitem__(self, index): 
         return self.pieces[index]
 
@@ -137,9 +130,6 @@ class Board():
              board.pieces[0][i] = self.pieces[0][i + Board.pits_n]
              board.pieces[0][i + Board.pits_n] = self.pieces[0][i]
         board.pieces[0][Board.pit_no_captures] = self.pieces[0][Board.pit_no_captures]
-        # TODO: should the self/other fields also not be swapped???
-        #board.pieces[0][Board.pit_captured_self] = self.pieces[0][Board.pit_captured_self]
-        #board.pieces[0][Board.pit_captured_other] = self.pieces[0][Board.pit_captured_other]
         board.pieces[0][Board.pit_captured_self] = self.pieces[0][Board.pit_captured_other]
         board.pieces[0][Board.pit_captured_other] = self.pieces[0][Board.pit_captured_self]
 
@@ -179,11 +169,6 @@ class Board():
 
         if captures > 0:
             if board_verbose: print('captured ' + str(captures) + ' by ' + str(color))
-            #if color == 1:
-            #    child.pieces[0][Board.pit_captured_self] += captures
-            #else:
-            #    child.pieces[0][Board.pit_captured_other] += captures
-            # board is mirrored, so pit is in the other of the child:
             child.pieces[0][Board.pit_captured_other] += captures
             # monitor no-progress cycles
             child.pieces[0][Board.pit_no_captures] = 0

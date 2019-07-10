@@ -90,9 +90,7 @@ class HumanAwariPlayer():
         while True: 
             # Python 3.x
             a = input()
-            # Python 2.x 
-            # a = raw_input()
-
+            
             x = 0
             for y in a.split(' '):
                 x = int(y)

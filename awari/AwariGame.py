@@ -10,6 +10,7 @@ Game class implementation for the game of Awari.
 Based on the TicTacToeGame Evgeny Tyurin which was
 based on the OthelloGame by Surag Nair.
 Author: Kees Verstoep, Vrije Universiteit Amsterdam
+Edit: Davide Mariotti, Vrije Universiteit Amsterdam
 """
 
 global game_verbose
@@ -32,30 +33,20 @@ class AwariGame(Game):
         # For NNet integration we transform the board into an image stack
         # which highlights some useful structural information which would
         # be hard to be derived independently.  AlphagoZero does this too.
-        if num_layers == 9:
-            return (6, 6, 9)
-        elif num_layers == 15:
-            return (6, 6, 15)
-        elif num_layers == 13:
-            return (6, 6, 13)
-        elif num_layers == 1:
-            return (6, 6, 1)
-        else: 
-            raise Exception("Number of image stack layer unknown")
+        
+        switch (num_layers) {
+            case 1:  return (6, 6, 1);
+                     break;
+            case 9:  return (6, 6, 9);
+                     break;
+            case 13:  return (6, 6, 13);
+                     break;
+            case 15:  return (6, 6, 15);
+                     break;
+            default: raise Exception("Number of image stack layer unknown");
+                     break;
+        }
 
-    # def getImageStackSize(self):
-    #     """ Returns size of image stack that is used as input to NNet
-    #     """
-    #     if num_layers == 9:
-    #         return 9
-    #     elif num_layers == 15:
-    #         return 15
-    #     elif num_layers == 13:
-    #         return 13
-    #     elif num_layers == 1:
-    #         return 1
-    #     else: 
-    #         raise Exception("Number of image stack layer unknown")
 
     def getImageStack(self, board, num_layers):
         """ Returns input stack for the given board
@@ -74,8 +65,7 @@ class AwariGame(Game):
         # 0 |  1  2  3  4
         #   +------------
         #      0  1  2  3
-        # ind_x = [ 0, 0, 1, 2, 3, 3, 3, 3, 2, 1, 0, 0 ]
-        # ind_y = [ 1, 0, 0, 0, 0, 1, 2, 3, 3, 3, 3, 2 ]
+        
         ind_x = [ 1, 1, 2, 3, 4, 4, 4, 4, 3, 2, 1, 1 ]
         ind_y = [ 2, 1, 1, 1, 1, 2, 3, 4, 4, 4, 4, 3 ]
 
